@@ -7,7 +7,7 @@ import (
 	"github.com/axiomhq/axiom-go/axiom"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"kamaesoft.visualstudio.com/Services/_git/kocto/config"
+	"kamaesoft.visualstudio.com/kocto/_git/kocto/config"
 )
 
 func InitLogger(cfg config.Config) (*zap.SugaredLogger, error) {
