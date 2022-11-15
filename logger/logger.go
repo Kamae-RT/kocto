@@ -1,13 +1,13 @@
 package logger
 
 import (
-	"kocto/config"
 	"time"
 
 	adapter "github.com/axiomhq/axiom-go/adapters/zap"
 	"github.com/axiomhq/axiom-go/axiom"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"kamaesoft.visualstudio.com/Services/_git/kocto/config"
 )
 
 func InitLogger(cfg config.Config) (*zap.SugaredLogger, error) {

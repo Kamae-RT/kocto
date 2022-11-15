@@ -1,4 +1,4 @@
-module kocto
+module kamaesoft.visualstudio.com/Services/_git/kocto
 
 go 1.19
 
