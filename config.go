@@ -42,21 +42,21 @@ func LoadConfig() Config {
 	var cfg Config
 
 	env := ""
-	flag.StringVar(&env, "env", getEnvVar("ENV", "development"), "Environment (development|production)")
+	flag.StringVar(&env, "env", GetEnvVar("ENV", "development"), "Environment (development|production)")
 	cfg.Env = Environment(env)
 
-	flag.StringVar(&cfg.Port, "port", getEnvVar("PORT", "8080"), "Port the http server is running on")
-	flag.StringVar(&cfg.DB.URL, "db-url", getEnvVar("DATABASE_URL", "mongodb://localhost:27017/"), "MongoDB connection url")
-	flag.StringVar(&cfg.DB.Name, "db-name", getEnvVar("DATABASE_NAME", ""), "MongoDB connection url")
-	flag.StringVar(&cfg.Rabbit.URL, "rabbit-url", getEnvVar("RABBIT_URL", "amqp://localhost"), "RabbitMQ cluster url")
-	flag.StringVar(&cfg.Log.Name, "log-name", getEnvVar("LOG_NAME", ""), "")
-	flag.StringVar(&cfg.Log.Org, "axiom-org", getEnvVar("AXIOM_ORG_ID", ""), "")
-	flag.StringVar(&cfg.Log.Token, "axiom-token", getEnvVar("AXIOM_TOKEN", ""), "")
+	flag.StringVar(&cfg.Port, "port", GetEnvVar("PORT", "8080"), "Port the http server is running on")
+	flag.StringVar(&cfg.DB.URL, "db-url", GetEnvVar("DATABASE_URL", "mongodb://localhost:27017/"), "MongoDB connection url")
+	flag.StringVar(&cfg.DB.Name, "db-name", GetEnvVar("DATABASE_NAME", ""), "MongoDB connection url")
+	flag.StringVar(&cfg.Rabbit.URL, "rabbit-url", GetEnvVar("RABBIT_URL", "amqp://localhost"), "RabbitMQ cluster url")
+	flag.StringVar(&cfg.Log.Name, "log-name", GetEnvVar("LOG_NAME", ""), "")
+	flag.StringVar(&cfg.Log.Org, "axiom-org", GetEnvVar("AXIOM_ORG_ID", ""), "")
+	flag.StringVar(&cfg.Log.Token, "axiom-token", GetEnvVar("AXIOM_TOKEN", ""), "")
 
 	return cfg
 }
 
-func getEnvVar(key, defaultValue string) string {
+func GetEnvVar(key, defaultValue string) string {
 	val := os.Getenv(key)
 	if val == "" {
 		return defaultValue

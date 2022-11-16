@@ -38,9 +38,17 @@ func HourAnchor(t time.Time) time.Time {
 	return time.Date(y, m, d, n.Hour()+1, 0, 0, 0, time.UTC)
 }
 
+func ToNextHour(now time.Time) time.Duration {
+    return now.Sub(HourAnchor(now))
+}
+
 func MidnightAnchor(t time.Time) time.Time {
 	n := time.Now()
 	y, m, d := n.Date()
 
 	return time.Date(y, m, d+1, 0, 0, 0, 0, time.UTC)
+}
+
+func ToNextDay(now time.Time) time.Duration {
+    return now.Sub(MidnightAnchor(now))
 }

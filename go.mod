@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/axiomhq/axiom-go v0.12.0
 	github.com/imroc/req/v3 v3.25.0
-	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/mbcrocci/pika v0.9.3
 	github.com/stretchr/testify v1.8.0
