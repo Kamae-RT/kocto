@@ -1,4 +1,4 @@
-package logger
+package kocto
 
 import (
 	"time"
@@ -7,33 +7,33 @@ import (
 	"github.com/axiomhq/axiom-go/axiom"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"kamaesoft.visualstudio.com/kocto/_git/kocto/config"
 )
 
-func InitLogger(cfg config.Config) (*zap.SugaredLogger, error) {
-	if cfg.Env == "development" {
-		logger, err := devLogger(cfg.Log)
-		if err != nil {
-			return nil, err
-		}
-		return logger.Sugar(), nil
-	}
-
-	logger, err := prodLogger(cfg.Log)
-	if err != nil {
-		return nil, err
-	}
-	return logger.Sugar(), nil
+type Logger struct {
+	*zap.SugaredLogger
 }
 
-func devLogger(cfg config.LogConfig) (*zap.Logger, error) {
+func InitLogger(cfg Config) (*Logger, error) {
+	if cfg.Env == "development" {
+		return devLogger(cfg.Log)
+	}
+
+	return prodLogger(cfg.Log)
+}
+
+func devLogger(cfg LogConfig) (*Logger, error) {
 	logConfig := zap.NewDevelopmentConfig()
 	logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 
-	return logConfig.Build()
+    logger, err := logConfig.Build()
+    if err != nil {
+        return nil, err
+    }
+
+    return &Logger{logger.Sugar()}, nil
 }
 
-func prodLogger(cfg config.LogConfig) (*zap.Logger, error) {
+func prodLogger(cfg LogConfig) (*Logger, error) {
 	logConfig := zap.NewProductionConfig()
 	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	logConfig.EncoderConfig.EncodeDuration = zapcore.StringDurationEncoder
@@ -61,7 +61,7 @@ func prodLogger(cfg config.LogConfig) (*zap.Logger, error) {
 
 	go syncer(logger)
 
-	return logger, nil
+    return &Logger{logger.Sugar()}, nil
 }
 
 func syncer(logger *zap.Logger) {
