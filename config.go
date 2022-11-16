@@ -60,6 +60,7 @@ func LoadConfigWithoutParse(cfg *Config) {
 	flag.StringVar(&cfg.Log.Name, "log-name", GetEnvVar("LOG_NAME", ""), "")
 	flag.StringVar(&cfg.Log.Org, "axiom-org", GetEnvVar("AXIOM_ORG_ID", ""), "")
 	flag.StringVar(&cfg.Log.Token, "axiom-token", GetEnvVar("AXIOM_TOKEN", ""), "")
+	flag.StringVar(&cfg.Log.Dataset, "axiom-dataset", GetEnvVar("AXIOM_DATASET", ""), "")
 }
 
 func GetEnvVar(key, defaultValue string) string {
