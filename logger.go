@@ -47,6 +47,7 @@ func prodLogger(cfg LogConfig) (*Logger, error) {
 			cfg.Org,
 		)),
 		adapter.SetDataset(cfg.Dataset),
+		adapter.SetLevelEnabler(zapcore.InfoLevel),
 	)
 	if err != nil {
 		return nil, err
