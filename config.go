@@ -39,8 +39,16 @@ type RabbitConfig struct {
 }
 
 func LoadConfig() Config {
-	var cfg Config
+    var cfg Config
 
+    LoadConfigWithoutParse(&cfg)
+
+    flag.Parse()
+
+    return cfg
+}
+
+func LoadConfigWithoutParse(cfg *Config) {
 	env := ""
 	flag.StringVar(&env, "env", GetEnvVar("ENV", "development"), "Environment (development|production)")
 	cfg.Env = Environment(env)
@@ -52,8 +60,6 @@ func LoadConfig() Config {
 	flag.StringVar(&cfg.Log.Name, "log-name", GetEnvVar("LOG_NAME", ""), "")
 	flag.StringVar(&cfg.Log.Org, "axiom-org", GetEnvVar("AXIOM_ORG_ID", ""), "")
 	flag.StringVar(&cfg.Log.Token, "axiom-token", GetEnvVar("AXIOM_TOKEN", ""), "")
-
-	return cfg
 }
 
 func GetEnvVar(key, defaultValue string) string {
