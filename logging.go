@@ -5,19 +5,17 @@ import (
 	"github.com/mbcrocci/pika"
 )
 
-func (l *Logger) WithRequest(c echo.Context) *Logger {
-	l.SugaredLogger = l.SugaredLogger.With(
+// WithRequest extracts information from the request context and adds it to the log context
+func WithRequest(l Logger, c echo.Context) Logger {
+    return l.With(
 		"URI", c.Path(),
 		"query", c.QueryString(),
 	)
-
-	return l
 }
 
-func (l *Logger) WithEventContext(o pika.ConsumerOptions) *Logger {
-	l.SugaredLogger = l.SugaredLogger.With(
+// WithEventContext extracts information from the consumerOptions and adds to the log context
+func WithEventContext(l Logger, o pika.ConsumerOptions) Logger {
+	return l.With(
 		"topic", o.Topic,
 	)
-
-	return l
 }
