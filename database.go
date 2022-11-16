@@ -9,11 +9,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func DBConnect(url, name string) (*mongo.Database, error) {
+func DBConnect(cfg DBConfig) (*mongo.Database, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(url))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(cfg.URL))
 	if err != nil {
 		return nil, err
 	}
@@ -22,6 +22,7 @@ func DBConnect(url, name string) (*mongo.Database, error) {
 		return nil, err
 	}
 
-	db := client.Database(name)
+	db := client.Database(cfg.Name)
+
 	return db, nil
 }
