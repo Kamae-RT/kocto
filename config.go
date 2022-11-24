@@ -3,6 +3,7 @@ package kocto
 import (
 	"flag"
 	"os"
+	"strconv"
 )
 
 type Environment string
@@ -39,13 +40,13 @@ type RabbitConfig struct {
 }
 
 func LoadConfig() Config {
-    var cfg Config
+	var cfg Config
 
-    LoadConfigWithoutParse(&cfg)
+	LoadConfigWithoutParse(&cfg)
 
-    flag.Parse()
+	flag.Parse()
 
-    return cfg
+	return cfg
 }
 
 func LoadConfigWithoutParse(cfg *Config) {
@@ -70,4 +71,15 @@ func GetEnvVar(key, defaultValue string) string {
 	}
 
 	return val
+}
+
+func GetBoolEnvVar(key string, defaultValue bool) bool {
+	val := GetEnvVar(key, strconv.FormatBool(defaultValue))
+
+	b, err := strconv.ParseBool(val)
+	if err != nil {
+		return defaultValue
+	}
+
+	return b
 }
