@@ -39,7 +39,7 @@ func HourAnchor(t time.Time) time.Time {
 }
 
 func ToNextHour(now time.Time) time.Duration {
-    return now.Sub(HourAnchor(now))
+    return HourAnchor(now).Sub(now)
 }
 
 func MidnightAnchor(t time.Time) time.Time {
@@ -50,5 +50,5 @@ func MidnightAnchor(t time.Time) time.Time {
 }
 
 func ToNextDay(now time.Time) time.Duration {
-    return now.Sub(MidnightAnchor(now))
+    return MidnightAnchor(now).Sub(now)
 }
