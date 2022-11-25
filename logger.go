@@ -56,10 +56,10 @@ func prodLogger(cfg LogConfig) (Logger, error) {
 		return nil, err
 	}
 	axiomCore, err := adapter.New(
-		adapter.SetClientOptions(axiom.SetCloudConfig(
-			cfg.Token,
-			cfg.Org,
-		)),
+		adapter.SetClientOptions(
+			axiom.SetAPITokenConfig(cfg.Token),
+			axiom.SetOrganizationID(cfg.Org),
+		),
 		adapter.SetDataset(cfg.Dataset),
 		adapter.SetLevelEnabler(zapcore.InfoLevel),
 	)
