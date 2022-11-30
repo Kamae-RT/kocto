@@ -32,23 +32,33 @@ func UnixMilliToTicks(millis int64) uint64 {
 }
 
 func HourAnchor(t time.Time) time.Time {
-	n := time.Now()
-	y, m, d := n.Date()
+	y, m, d := t.Date()
 
-	return time.Date(y, m, d, n.Hour()+1, 0, 0, 0, time.UTC)
+	return time.Date(y, m, d, t.Hour()+1, 0, 0, 0, t.Location())
 }
 
 func ToNextHour(now time.Time) time.Duration {
-    return HourAnchor(now).Sub(now)
+	return HourAnchor(now).Sub(now)
 }
 
 func MidnightAnchor(t time.Time) time.Time {
-	n := time.Now()
-	y, m, d := n.Date()
+	y, m, d := t.Date()
 
-	return time.Date(y, m, d+1, 0, 0, 0, 0, time.UTC)
+	return time.Date(y, m, d+1, 0, 0, 0, 0, t.Location())
 }
 
 func ToNextDay(now time.Time) time.Duration {
-    return MidnightAnchor(now).Sub(now)
+	return MidnightAnchor(now).Sub(now)
+}
+
+func ResetHour(t time.Time) time.Time {
+	y, m, d := t.Date()
+
+	return time.Date(y, m, d, t.Hour(), 0, 0, 0, t.Location())
+}
+
+func ResetDay(t time.Time) time.Time {
+	y, m, d := t.Date()
+
+	return time.Date(y, m, d, 0, 0, 0, 0, t.Location())
 }
