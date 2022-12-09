@@ -120,7 +120,7 @@ func RangeLinkStream[T any](errs chan error, r Range, pf func(Range, string) ([]
 	return data
 }
 
-// LinkStreamWithRange produces a stream of T from a worker that accepts a range 
+// LinkStreamWithRange produces a stream of T from a worker that accepts a range
 //
 // It assumes `worker` is able to provide the next page link and accepts an empty page.
 func LinkStreamWithRange[T any](errs chan error, r Range, worker func(Range, string) ([]T, string, error)) chan T {
@@ -143,6 +143,37 @@ func LinkStreamWithRange[T any](errs chan error, r Range, worker func(Range, str
 
 			hasMore = next != ""
 			nextPage = next
+		}
+
+		close(stream)
+	}()
+
+	return stream
+}
+
+// LimitStream produces a stream of T from a worker that accepts limit and an offset
+//
+// Starts at offset = 0 and continues until the last "page" is smaller than limit
+func LimitStream[T any](errs chan error, limit int, worker func(int, int) ([]T, error)) chan T {
+	stream := make(chan T)
+
+	go func() {
+		hasMore := true
+		offset := 0
+
+		for hasMore {
+			ds, err := worker(limit, offset)
+			if err != nil {
+				errs <- err
+				break
+			}
+
+			for _, d := range ds {
+				stream <- d
+			}
+
+			hasMore = len(ds) == limit
+			offset += limit
 		}
 
 		close(stream)
