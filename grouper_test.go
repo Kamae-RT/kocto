@@ -1,7 +1,6 @@
 package kocto_test
 
 import (
-	"encoding/json"
 	"testing"
 
 	"kamaesoft.visualstudio.com/kocto/_git/kocto"
@@ -37,12 +36,21 @@ func TestGrouper(t *testing.T) {
 
 	tree := kocto.Group(groups, data)
 
-	j, err := json.Marshal(tree)
-	if err != nil {
-		t.Log(err)
+	if len(tree.Nodes) != 2 {
+		t.Log("should have 2 A nodes")
 		t.FailNow()
+	} else if tree.Nodes[0].Group != "A" || tree.Nodes[0].Key != 1 {
+		t.Fail()
 	}
 
-	t.Log(string(j))
-	t.Fail()
+	if len(tree.Nodes[0].Nodes) != 2 {
+		t.Log("A: 1 node should and 2 subnodes")
+		t.FailNow()
+	}
+	if tree.Nodes[0].Nodes[0].Group != "B" || tree.Nodes[0].Nodes[0].Key != "1" ||
+		tree.Nodes[0].Nodes[1].Group != "B" || tree.Nodes[0].Nodes[1].Key != "2" {
+
+		t.Log("incorrect subnodes")
+		t.Fail()
+	}
 }

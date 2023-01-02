@@ -1,7 +1,5 @@
 package kocto
 
-import "fmt"
-
 type Indexable interface {
 	Get(field string) any
 }
@@ -42,8 +40,6 @@ func newNode(group string, key any) groupNode {
 }
 
 func (n *groupNode) Insert(group string, groups []string, d Indexable) {
-	fmt.Printf("%s - %v\n", group, groups)
-
 	if group == "" {
 		n.Data = append(n.Data, d)
 		return
