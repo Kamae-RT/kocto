@@ -1,5 +1,7 @@
 package kocto
 
+import "fmt"
+
 type Indexable interface {
 	Get(field string) any
 }
@@ -8,14 +10,19 @@ type GroupTree struct {
 	groupNode `json:"data"`
 }
 
-func Group(groups []string, data []Indexable) GroupTree {
+type FlatGroup struct {
+	Key  string
+	Data []Indexable
+}
+
+func Group(groups []string, data []Indexable) []FlatGroup {
 	tree := GroupTree{groupNode: newNode("", nil)}
 
 	for _, d := range data {
 		tree.Insert(groups, d)
 	}
 
-	return tree
+	return tree.groupNode.Flatten("")
 }
 
 func (t *GroupTree) Insert(groups []string, d Indexable) {
@@ -75,4 +82,33 @@ func findNode(val any, nodes []groupNode) int {
 	}
 
 	return idx
+}
+
+func (n groupNode) Flatten(key string) []FlatGroup {
+	groups := make([]FlatGroup, 0)
+
+	if len(n.Nodes) > 0 {
+		for _, c := range n.Nodes {
+			k := gKey(key, c.Key)
+			groups = append(groups, c.Flatten(k)...)
+		}
+	} else {
+		g := FlatGroup{Key: key, Data: n.Data}
+		groups = append(groups, g)
+	}
+
+	return groups
+}
+
+func gKey(s1 string, s2 any) string {
+	s := ""
+	if s2 != nil {
+		s = fmt.Sprint(s2)
+	}
+
+	if s1 == "" {
+		return s
+	}
+
+	return fmt.Sprint(s1, ",", s)
 }

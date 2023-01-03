@@ -1,6 +1,8 @@
 package kocto_test
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"kamaesoft.visualstudio.com/kocto/_git/kocto"
@@ -13,10 +15,10 @@ func (g G) Get(field string) any {
 }
 
 var groupTestData = []G{
-	{"A": 1, "B": "1", "C": 1, "D": 1},
-	{"A": 1, "B": "1", "C": 2, "D": 1},
-	{"A": 1, "B": "1", "C": 3, "D": 1},
-	{"A": 1, "B": "2", "C": 1, "D": 1},
+	{"A": 1, "B": "1", "C": 1},
+	{"A": 1, "B": "1", "C": 2},
+	{"A": 1, "B": "1", "C": 3},
+	{"A": 1, "B": "2", "C": 1},
 	{"A": 1, "B": "2", "C": 2},
 	{"A": 1, "B": "2", "C": 3},
 	{"A": 2, "B": "1", "C": 1},
@@ -28,29 +30,44 @@ var groupTestData = []G{
 }
 
 func TestGrouper(t *testing.T) {
-	groups := []string{"A", "B", "D", "C"}
+	tests := []struct {
+		groups    []string
+		groupSize int
+	}{
+		{[]string{"A"}, 2},
+		{[]string{"B"}, 2},
+		{[]string{"A", "B"}, 4},
+		{[]string{"B", "A"}, 4},
+		{[]string{"A", "B", "C"}, 12},
+		{[]string{"A", "C", "B"}, 12},
+		{[]string{"C", "B", "A"}, 12},
+		{[]string{"C", "A", "B"}, 12},
+	}
+
 	data := make([]kocto.Indexable, len(groupTestData))
 	for i := range groupTestData {
 		data[i] = groupTestData[i]
 	}
 
-	tree := kocto.Group(groups, data)
+	for _, tt := range tests {
+		grouppedData := kocto.Group(tt.groups, data)
 
-	if len(tree.Nodes) != 2 {
-		t.Log("should have 2 A nodes")
-		t.FailNow()
-	} else if tree.Nodes[0].Group != "A" || tree.Nodes[0].Key != 1 {
-		t.Fail()
-	}
+		// check if the number of groups is correct
+		if len(grouppedData) != tt.groupSize {
+			t.Logf("expected %d groups got %d\n", tt.groupSize, len(grouppedData))
+			t.FailNow()
+		}
 
-	if len(tree.Nodes[0].Nodes) != 2 {
-		t.Log("A: 1 node should and 2 subnodes")
-		t.FailNow()
-	}
-	if tree.Nodes[0].Nodes[0].Group != "B" || tree.Nodes[0].Nodes[0].Key != "1" ||
-		tree.Nodes[0].Nodes[1].Group != "B" || tree.Nodes[0].Nodes[1].Key != "2" {
-
-		t.Log("incorrect subnodes")
-		t.Fail()
+		// check if any child is misplaced
+		for _, gd := range grouppedData {
+			for _, d := range gd.Data {
+				for _, g := range tt.groups {
+					if !strings.Contains(gd.Key, fmt.Sprint(d.Get(g))) {
+						t.Logf("%v is not in it's correct group %s\n", d, gd.Key)
+						t.Fail()
+					}
+				}
+			}
+		}
 	}
 }
