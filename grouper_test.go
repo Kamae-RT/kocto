@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/matryer/is"
 	"kamaesoft.visualstudio.com/kocto/_git/kocto"
 )
 
@@ -44,6 +45,8 @@ func TestGrouper(t *testing.T) {
 		{[]string{"C", "A", "B"}, 12},
 	}
 
+	is := is.NewRelaxed(t)
+
 	data := make([]kocto.Indexable, len(groupTestData))
 	for i := range groupTestData {
 		data[i] = groupTestData[i]
@@ -54,18 +57,14 @@ func TestGrouper(t *testing.T) {
 
 		// check if the number of groups is correct
 		if len(grouppedData) != tt.groupSize {
-			t.Logf("expected %d groups got %d\n", tt.groupSize, len(grouppedData))
-			t.FailNow()
+			is.Equal(tt.groupSize, len(grouppedData)) // size of groups should be equal
 		}
 
 		// check if any child is misplaced
 		for _, gd := range grouppedData {
 			for _, d := range gd.Data {
 				for _, g := range tt.groups {
-					if !strings.Contains(gd.Key, fmt.Sprint(d.Get(g))) {
-						t.Logf("%v is not in it's correct group %s\n", d, gd.Key)
-						t.Fail()
-					}
+					is.True(strings.Contains(gd.Key, fmt.Sprint(d.Get(g)))) // group is incorrect
 				}
 			}
 		}

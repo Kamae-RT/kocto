@@ -3,23 +3,19 @@ package kocto
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/matryer/is"
 )
 
 func TestBatcher(t *testing.T) {
 	b := NewBatcher[int](2)
 
-	assert.False(t, b.Add(1))
-	assert.True(t, b.Add(2))
+	is := is.NewRelaxed(t)
 
-	prev := make([]int, len(b.data))
-	copy(prev, b.data)
-
-	assert.ElementsMatch(t, prev, b.data)
+	is.True(!b.Add(1)) // batch should not be full
+	is.True(b.Add(2))  // batch should be full
 
 	b.Flush(func(t []int) {})
-	assert.False(t, b.Add(3))
-	assert.True(t, b.Add(4))
 
-	assert.NotContains(t, b.data, prev)
+	is.True(!b.Add(3)) // batch shoud be able to full again
+	is.True(b.Add(4)) // batch should be full again
 }
