@@ -13,14 +13,15 @@ type Pipeline interface {
 }
 
 func NewPipeline() Pipeline {
-	return &ConcurrentPipeline{workers: make([]stageWorker, 0)}
+	//return &ConcurrentPipeline{workers: make([]stageWorker, 0)}
+	return &ConcPipeline{workers: make([]concWorker, 0)}
 }
 
-type ConcurrentPipeline struct {
-	workers []stageWorker
+type ConcPipeline struct {
+	workers []concWorker
 }
 
-func (p *ConcurrentPipeline) AddStage(stage Stage, opt *StageOptions) {
+func (p *ConcPipeline) AddStage(stage Stage, opt *StageOptions) {
 	if opt == nil {
 		opt = &StageOptions{Concurrency: 10} // should be > 1
 	}
@@ -33,21 +34,19 @@ func (p *ConcurrentPipeline) AddStage(stage Stage, opt *StageOptions) {
 		in = w.Output()
 	}
 
-	worker := newStageWorker(opt.Concurrency, in, out, stage)
+	worker := newConcWorker(opt.Concurrency, in, out, stage)
 	p.workers = append(p.workers, worker)
 }
 
-func (p *ConcurrentPipeline) Start() error {
+func (p *ConcPipeline) Start() error {
 	for _, w := range p.workers {
-		if err := w.Start(); err != nil {
-			return err
-		}
+		w.Start()
 	}
 
 	return nil
 }
 
-func (p *ConcurrentPipeline) Stop() error {
+func (p *ConcPipeline) Stop() error {
 	for _, w := range p.workers {
 		w.Stop()
 	}
@@ -57,11 +56,11 @@ func (p *ConcurrentPipeline) Stop() error {
 	return nil
 }
 
-func (p *ConcurrentPipeline) Output() <-chan Message {
+func (p *ConcPipeline) Output() <-chan Message {
 	sz := len(p.workers)
 	return p.workers[sz-1].Output()
 }
 
-func (p *ConcurrentPipeline) Input() chan<- Message {
+func (p *ConcPipeline) Input() chan<- Message {
 	return p.workers[0].Input()
 }

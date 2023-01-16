@@ -64,7 +64,10 @@ func TestPipeline(t *testing.T) {
 		}
 	}()
 
-	for i := 1; i < 4; i++ {
+	numMsgs := 100
+	expected := numMsgs * 2
+
+	for i := 1; i <= numMsgs; i++ {
 		p.Input() <- i
 		t.Log("In: ", i)
 	}
@@ -73,8 +76,8 @@ func TestPipeline(t *testing.T) {
 	time.Sleep(time.Millisecond * 10)
 
 	msgs.l.Lock()
-	if len(msgs.messages) != 6 {
-		t.Log("wrong number of messages: ", len(msgs.messages))
+	if len(msgs.messages) != expected {
+		t.Log("wrong number of messages: ", len(msgs.messages), " expected ", expected)
 		t.Fail()
 	}
 	msgs.l.Unlock()
