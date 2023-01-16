@@ -1,8 +1,6 @@
 package kocto
 
 import (
-	"log"
-
 	"github.com/sourcegraph/conc/pool"
 )
 
@@ -22,8 +20,8 @@ type concWorker struct {
 	stage      Stage
 }
 
-func newConcWorker(concurrentWorkers int, in chan Message, out chan Message, stage Stage) concWorker {
-	return concWorker{
+func newConcWorker(concurrentWorkers int, in chan Message, out chan Message, stage Stage) *concWorker {
+	return &concWorker{
 		pool:       pool.New().WithMaxGoroutines(concurrentWorkers),
 		concurrent: concurrentWorkers,
 		in:         in,
@@ -35,17 +33,15 @@ func newConcWorker(concurrentWorkers int, in chan Message, out chan Message, sta
 func (w *concWorker) Start() error {
 	for i := 0; i < w.concurrent; i++ {
 		w.pool.Go(func() {
-			log.Println("working")
-			for msg := range w.in {
+			for msg := range w.Input() {
 				msg := msg
 
-				log.Println("processing")
 				res, err := w.stage.Process(msg)
 				if err != nil {
 				}
 
 				for _, m := range res {
-					w.out <- m
+					w.Output() <- m
 				}
 			}
 		})

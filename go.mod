@@ -6,6 +6,7 @@ require (
 	github.com/axiomhq/axiom-go v0.13.4
 	github.com/imroc/req/v3 v3.25.0
 	github.com/labstack/echo/v4 v4.9.1
+	github.com/matryer/is v1.4.0
 	github.com/mbcrocci/pika v0.9.3
 	github.com/sourcegraph/conc v0.1.0
 	github.com/stretchr/testify v1.8.1

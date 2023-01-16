@@ -1,31 +1,51 @@
 package kocto_test
 
 import (
+	"math"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/matryer/is"
 	"kamaesoft.visualstudio.com/kocto/_git/kocto"
 )
 
-type doubler struct{}
-
-func (s doubler) Process(msg kocto.Message) ([]kocto.Message, error) {
-	return []kocto.Message{msg.(int) * 2}, nil
+type doubler struct {
+	t     *testing.T
+	l     sync.Mutex
+	count int
 }
 
-type power struct{}
+func (s *doubler) Process(msg kocto.Message) ([]kocto.Message, error) {
+	s.l.Lock()
+	defer s.l.Unlock()
 
-func (s power) Process(msg kocto.Message) ([]kocto.Message, error) {
-	return []kocto.Message{msg.(int) ^ 2}, nil
+	s.count += 1
+
+	m := msg.(int)
+	r := m * 2
+
+	s.t.Logf("doubler: processing %d => %d", m, r)
+	return []kocto.Message{r}, nil
 }
 
-type splitter struct{}
+type power struct {
+	t     *testing.T
+	l     sync.Mutex
+	count int
+}
 
-func (s splitter) Process(msg kocto.Message) ([]kocto.Message, error) {
-	n := msg.(int) / 2
+func (s *power) Process(msg kocto.Message) ([]kocto.Message, error) {
+	s.l.Lock()
+	defer s.l.Unlock()
 
-	return []kocto.Message{n, n}, nil
+	s.count += 1
+
+	m := msg.(int)
+	r := int(math.Pow(float64(m), 2))
+	s.t.Logf("power: processing %d => %d", m, r)
+
+	return []kocto.Message{r}, nil
 }
 
 type msgsS struct {
@@ -43,9 +63,11 @@ func (m *msgsS) Add(msg kocto.Message) {
 func TestPipeline(t *testing.T) {
 	p := kocto.NewPipeline()
 
-	p.AddStage(doubler{}, nil)
-	p.AddStage(power{}, nil)
-	p.AddStage(splitter{}, nil)
+	d := &doubler{t, sync.Mutex{}, 0}
+	pw := &power{t, sync.Mutex{}, 0}
+
+	p.AddStage(d, &kocto.StageOptions{Concurrency: 2})
+	p.AddStage(pw, &kocto.StageOptions{Concurrency: 2})
 
 	if err := p.Start(); err != nil {
 		t.Log(err)
@@ -59,26 +81,38 @@ func TestPipeline(t *testing.T) {
 
 	go func() {
 		for msg := range p.Output() {
-			t.Log("out: ", msg)
+			msg := msg
+			//t.Log("out:", msg)
 			msgs.Add(msg)
 		}
 	}()
 
 	numMsgs := 100
-	expected := numMsgs * 2
+	expected := numMsgs
 
 	for i := 1; i <= numMsgs; i++ {
 		p.Input() <- i
-		t.Log("In: ", i)
 	}
 
+	time.Sleep(time.Millisecond * 100)
 	p.Stop()
-	time.Sleep(time.Millisecond * 10)
+
+	is := is.NewRelaxed(t)
+
+	is.Equal(d.count, numMsgs)  // doubler should have seen 100 msgs
+	is.Equal(pw.count, numMsgs) // power should have seen 100 msgs
 
 	msgs.l.Lock()
 	if len(msgs.messages) != expected {
-		t.Log("wrong number of messages: ", len(msgs.messages), " expected ", expected)
-		t.Fail()
+		is.Equal(len(msgs.messages), expected)
 	}
+
+	sum := 0
+	for _, m := range msgs.messages {
+		sum += m.(int)
+	}
+
+	is.Equal(sum, 1353400) // the sum of (x * 2) ^2 , where x E [1, 100] should be 1353400
+
 	msgs.l.Unlock()
 }
