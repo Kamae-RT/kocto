@@ -12,36 +12,42 @@ type StageOptions struct {
 	Concurrency int
 }
 
-type concWorker struct {
-	pool       *pool.Pool
-	concurrent int
-	in         chan Message
-	out        chan Message
-	stage      Stage
+type pipeWorker struct {
+	In  chan Message
+	Out chan Message
+
+	logger      Logger
+	pool        *pool.Pool
+	concurrency int
+
+	stage Stage
 }
 
-func newConcWorker(concurrentWorkers int, in chan Message, out chan Message, stage Stage) *concWorker {
-	return &concWorker{
-		pool:       pool.New().WithMaxGoroutines(concurrentWorkers),
-		concurrent: concurrentWorkers,
-		in:         in,
-		out:        out,
-		stage:      stage,
+func newPipeWorker(l Logger, c int, in chan Message, out chan Message, stage Stage) *pipeWorker {
+	return &pipeWorker{
+		logger:      l,
+		pool:        pool.New().WithMaxGoroutines(c),
+		concurrency: c,
+		In:          in,
+		Out:         out,
+		stage:       stage,
 	}
 }
 
-func (w *concWorker) Start() error {
-	for i := 0; i < w.concurrent; i++ {
+func (w *pipeWorker) Start() error {
+	for i := 0; i < w.concurrency; i++ {
 		w.pool.Go(func() {
-			for msg := range w.Input() {
+			for msg := range w.In {
 				msg := msg
 
 				res, err := w.stage.Process(msg)
 				if err != nil {
+					w.logger.Errorw("unable to process message", "error", err)
+					continue
 				}
 
 				for _, m := range res {
-					w.Output() <- m
+					w.Out <- m
 				}
 			}
 		})
@@ -49,17 +55,9 @@ func (w *concWorker) Start() error {
 	return nil
 }
 
-func (w *concWorker) Stop() error {
-	close(w.Input())
+func (w *pipeWorker) Stop() error {
+	close(w.In)
 	w.pool.Wait()
 
 	return nil
-}
-
-func (w *concWorker) Input() chan Message {
-	return w.in
-}
-
-func (w *concWorker) Output() chan Message {
-	return w.out
 }

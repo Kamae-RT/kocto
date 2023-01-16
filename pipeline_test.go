@@ -80,7 +80,7 @@ func TestPipeline(t *testing.T) {
 	}
 
 	go func() {
-		for msg := range p.Output() {
+		for msg := range p.Out {
 			msg := msg
 			//t.Log("out:", msg)
 			msgs.Add(msg)
@@ -91,7 +91,7 @@ func TestPipeline(t *testing.T) {
 	expected := numMsgs
 
 	for i := 1; i <= numMsgs; i++ {
-		p.Input() <- i
+		p.In <- i
 	}
 
 	time.Sleep(time.Millisecond * 100)
