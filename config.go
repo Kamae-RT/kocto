@@ -1,9 +1,7 @@
 package kocto
 
 import (
-	"flag"
-	"os"
-	"strconv"
+	"github.com/caarlos0/env/v7"
 )
 
 type Environment string
@@ -16,70 +14,39 @@ const (
 const DefaultPort = "4444"
 
 type Config struct {
-	Env    Environment
-	Port   string
+	Env    Environment `env:"ENV"`
+	Port   string      `env:"PORT"`
 	Log    LogConfig
 	DB     DBConfig
 	Rabbit RabbitConfig
 }
 
 type LogConfig struct {
-	Name    string
-	Token   string
-	Org     string
-	Dataset string
+	Name    string `env:"LOG_NAME"`
+	Token   string `env:"AXIOM_TOKEN"`
+	Org     string `env:"AXIOM_ORG_ID"`
+	Dataset string `env:"AXIOM_DATASET"`
 }
 
 type DBConfig struct {
-	URL  string
-	Name string
+	URL  string `env:"DATABASE_URL"`
+	Name string `env:"DATABASE_NAME"`
 }
 
 type RabbitConfig struct {
-	URL string
+	URL string `env:"RABBIT_URL"`
 }
 
-func LoadConfig() Config {
+// Loads base configuration from the environment
+func LoadConfig() (Config, error) {
 	var cfg Config
+	err := LoadInConfig(&cfg)
 
-	LoadConfigWithoutParse(&cfg)
-
-	flag.Parse()
-
-	return cfg
+	return cfg, err
 }
 
-func LoadConfigWithoutParse(cfg *Config) {
-	env := ""
-	flag.StringVar(&env, "env", GetEnvVar("ENV", "development"), "Environment (development|production)")
-	cfg.Env = Environment(env)
-
-	flag.StringVar(&cfg.Port, "port", GetEnvVar("PORT", "8080"), "Port the http server is running on")
-	flag.StringVar(&cfg.DB.URL, "db-url", GetEnvVar("DATABASE_URL", "mongodb://localhost:27017/"), "MongoDB connection url")
-	flag.StringVar(&cfg.DB.Name, "db-name", GetEnvVar("DATABASE_NAME", ""), "MongoDB connection url")
-	flag.StringVar(&cfg.Rabbit.URL, "rabbit-url", GetEnvVar("RABBIT_URL", "amqp://localhost"), "RabbitMQ cluster url")
-	flag.StringVar(&cfg.Log.Name, "log-name", GetEnvVar("LOG_NAME", ""), "")
-	flag.StringVar(&cfg.Log.Org, "axiom-org", GetEnvVar("AXIOM_ORG_ID", ""), "")
-	flag.StringVar(&cfg.Log.Token, "axiom-token", GetEnvVar("AXIOM_TOKEN", ""), "")
-	flag.StringVar(&cfg.Log.Dataset, "axiom-dataset", GetEnvVar("AXIOM_DATASET", ""), "")
-}
-
-func GetEnvVar(key, defaultValue string) string {
-	val := os.Getenv(key)
-	if val == "" {
-		return defaultValue
-	}
-
-	return val
-}
-
-func GetBoolEnvVar(key string, defaultValue bool) bool {
-	val := GetEnvVar(key, strconv.FormatBool(defaultValue))
-
-	b, err := strconv.ParseBool(val)
-	if err != nil {
-		return defaultValue
-	}
-
-	return b
+// LoadInConfig parses a struct containing env vars
+// Use this function if you have your own extended config
+func LoadInConfig(cfg any) error {
+	return env.Parse(cfg)
 }
