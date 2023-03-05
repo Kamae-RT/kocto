@@ -61,7 +61,7 @@ func (m *msgsS) Add(msg kocto.Message) {
 }
 
 func TestPipeline(t *testing.T) {
-	p := kocto.NewPipeline()
+	p := kocto.NewPipeline(nil)
 
 	d := &doubler{t, sync.Mutex{}, 0}
 	pw := &power{t, sync.Mutex{}, 0}

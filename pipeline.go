@@ -10,9 +10,9 @@ type Pipeline struct {
 	workers []*pipeWorker
 }
 
-func NewPipeline() *Pipeline {
+func NewPipeline(l Logger) *Pipeline {
 	//return &ConcurrentPipeline{workers: make([]stageWorker, 0)}
-	return &Pipeline{workers: make([]*pipeWorker, 0)}
+	return &Pipeline{logger: l, workers: make([]*pipeWorker, 0)}
 }
 
 func (p *Pipeline) AddStage(stage Stage, opt *StageOptions) {
