@@ -3,9 +3,11 @@ package kocto
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -38,8 +40,9 @@ func LogMiddleware(l Logger) echo.MiddlewareFunc {
 		LogStatus:        true,
 		LogError:         true,
 		LogContentLength: true,
-		LogQueryParams:   []string{"code", "state", "id", "redirect_uri"},
 		LogLatency:       true,
+		LogQueryParams:   []string{"code", "state", "id", "redirect_uri"},
+		LogHeaders:       []string{"Referer"},
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 			msg := "request"
 			values := []any{
@@ -48,8 +51,9 @@ func LogMiddleware(l Logger) echo.MiddlewareFunc {
 				"status", v.Status,
 				"error", v.Error,
 				"length", v.ContentLength,
-				"query", queryString(v.QueryParams),
 				"latency", v.Latency.Milliseconds(),
+				"query", queryString(v.QueryParams),
+				"headers", headersString(v.Headers),
 			}
 
 			if v.RoutePath == "/healthz" {
@@ -89,6 +93,19 @@ func queryString(q map[string][]string) string {
 	}
 
 	return qString
+}
+
+func headersString(hs map[string][]string) string {
+	headerStrs := make([]string, 0)
+
+	for header, values := range hs {
+		for _, val := range values {
+			str := fmt.Sprintf("%s: %s", header, val)
+			headerStrs = append(headerStrs, str)
+		}
+	}
+
+	return strings.Join(headerStrs, ", ")
 }
 
 func RunServer(srv *echo.Echo, cfg Config, l Logger) error {
