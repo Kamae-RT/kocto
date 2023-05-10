@@ -10,7 +10,6 @@ require (
 	github.com/matryer/is v1.4.0
 	github.com/mbcrocci/pika v0.9.3
 	github.com/sourcegraph/conc v0.1.0
-	github.com/stretchr/testify v1.8.1
 	go.mongodb.org/mongo-driver v1.11.0
 	go.uber.org/zap v1.23.0
 )
@@ -21,7 +20,6 @@ require (
 	github.com/cockroachdb/errors v1.9.0 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20211118104740-dabe8e521a4f // indirect
 	github.com/cockroachdb/redact v1.1.3 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/getsentry/sentry-go v0.13.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
@@ -44,7 +42,6 @@ require (
 	github.com/montanaflynn/stats v0.6.6 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/qtls-go1-19 v0.3.2 // indirect
 	github.com/quic-go/qtls-go1-20 v0.1.1 // indirect
@@ -74,5 +71,4 @@ require (
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/time v0.2.0 // indirect
 	golang.org/x/tools v0.8.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

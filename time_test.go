@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/matryer/is"
 )
 
 func TestHourAnchor(t *testing.T) {
@@ -15,14 +15,15 @@ func TestHourAnchor(t *testing.T) {
 	t.Log("time: ", now)
 	t.Log("result: ", result)
 
-	assert.True(t, result.After(now))
-	assert.LessOrEqual(t, now.Sub(result), time.Hour)
+	is := is.New(t)
+	is.True(result.After(now))
+	is.True(now.Sub(result) <= time.Hour)
 
-	assert.Equal(t, now.Year(), result.Year())
-	assert.Equal(t, now.Month(), result.Month())
-	assert.Equal(t, now.Day(), result.Day())
-	assert.Equal(t, now.Hour()+1, result.Hour())
-	assert.Equal(t, result.Minute(), 0)
+	is.Equal(now.Year(), result.Year())
+	is.Equal(now.Month(), result.Month())
+	is.Equal(now.Day(), result.Day())
+	is.Equal(now.Hour()+1, result.Hour())
+	is.Equal(result.Minute(), 0)
 }
 
 func TestMidnightAnchor(t *testing.T) {
@@ -33,20 +34,24 @@ func TestMidnightAnchor(t *testing.T) {
 	t.Log("time: ", now)
 	t.Log("result: ", result)
 
-	assert.True(t, result.After(now))
+	is := is.New(t)
 
-	assert.Equal(t, now.Year(), result.Year())
-	assert.Equal(t, now.Month(), result.Month())
-	assert.Equal(t, now.Day()+1, result.Day())
-    assert.Equal(t, result.Hour(), 0)
+	is.True(result.After(now))
+
+	is.Equal(now.Year(), result.Year())
+	is.Equal(now.Month(), result.Month())
+	is.Equal(now.Day()+1, result.Day())
+	is.Equal(result.Hour(), 0)
 }
 
 func TestAnchorsRespectsLocation(t *testing.T) {
 	now := time.Date(2021, 10, 20, 0, 0, 0, 0, time.FixedZone("TEST", 20))
 
-    r1 := HourAnchor(now)
-    r2 := MidnightAnchor(now)
+	r1 := HourAnchor(now)
+	r2 := MidnightAnchor(now)
 
-    assert.Equal(t, now.Location(), r1.Location())
-    assert.Equal(t, now.Location(), r2.Location())
+	is := is.New(t)
+
+	is.Equal(now.Location(), r1.Location())
+	is.Equal(now.Location(), r2.Location())
 }
