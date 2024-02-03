@@ -2,12 +2,12 @@ package kocto
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/mbcrocci/pika"
+	"github.com/mbcrocci/pika/v2"
 )
 
 // WithRequest extracts information from the request context and adds it to the log context
 func WithRequest(l Logger, c echo.Context) Logger {
-    return l.With(
+	return l.With(
 		"URI", c.Path(),
 		"query", c.QueryString(),
 	)

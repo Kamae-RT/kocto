@@ -14,7 +14,12 @@ func NewBatcher[T any](size int) *Batcher[T] {
 	}
 }
 
+// Add inserts an item into the batch, if the batch is full it will return true and will miss the item
 func (b *Batcher[T]) Add(item T) bool {
+	if b.count == b.size {
+		return true
+	}
+
 	b.data[b.count] = item
 	b.count++
 

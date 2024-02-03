@@ -38,7 +38,7 @@ func TestExtendedConfig(t *testing.T) {
 	var cfg struct {
 		kocto.Config
 		InnerProp string `env:"MY_INNER_PROP"`
-		Nested struct {
+		Nested    struct {
 			NesterInner string `env:"MY_NESTED_INNER_PROP"`
 		}
 	}

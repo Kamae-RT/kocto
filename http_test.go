@@ -18,10 +18,12 @@ func TestHeaderString(t *testing.T) {
 			"Header2": {"Value2"},
 		}
 
+		// might change based on map order
+		expected1 := "Header1: Value1, Header2: Value2"
+		expected2 := "Header2: Value1, Header1: Value1"
 		str := headersString(headers)
-		expected := "Header1: Value1, Header2: Value2"
 
-		is.Equal(str, expected)
+		is.True(str == expected1 || str == expected2)
 	})
 
 	t.Run("multiple values in headers", func(t *testing.T) {

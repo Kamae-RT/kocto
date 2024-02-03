@@ -12,9 +12,6 @@ func TestHourAnchor(t *testing.T) {
 
 	result := HourAnchor(now)
 
-	t.Log("time: ", now)
-	t.Log("result: ", result)
-
 	is := is.New(t)
 	is.True(result.After(now))
 	is.True(now.Sub(result) <= time.Hour)
@@ -30,9 +27,6 @@ func TestMidnightAnchor(t *testing.T) {
 	now := time.Date(2021, 10, 20, 0, 0, 0, 0, time.UTC)
 
 	result := MidnightAnchor(now)
-
-	t.Log("time: ", now)
-	t.Log("result: ", result)
 
 	is := is.New(t)
 

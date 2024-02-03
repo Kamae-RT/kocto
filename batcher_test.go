@@ -13,9 +13,10 @@ func TestBatcher(t *testing.T) {
 
 	is.True(!b.Add(1)) // batch should not be full
 	is.True(b.Add(2))  // batch should be full
+	is.True(b.Add(3))  // batch should remain full
 
 	b.Flush(func(t []int) {})
 
 	is.True(!b.Add(3)) // batch shoud be able to full again
-	is.True(b.Add(4)) // batch should be full again
+	is.True(b.Add(4))  // batch should be full again
 }

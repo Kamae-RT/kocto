@@ -25,7 +25,7 @@ func (s *doubler) Process(msg kocto.Message) ([]kocto.Message, error) {
 	m := msg.(int)
 	r := m * 2
 
-	s.t.Logf("doubler: processing %d => %d", m, r)
+	// s.t.Logf("doubler: processing %d => %d", m, r)
 	return []kocto.Message{r}, nil
 }
 
@@ -43,7 +43,7 @@ func (s *power) Process(msg kocto.Message) ([]kocto.Message, error) {
 
 	m := msg.(int)
 	r := int(math.Pow(float64(m), 2))
-	s.t.Logf("power: processing %d => %d", m, r)
+	// s.t.Logf("power: processing %d => %d", m, r)
 
 	return []kocto.Message{r}, nil
 }
@@ -82,7 +82,7 @@ func TestPipeline(t *testing.T) {
 	go func() {
 		for msg := range p.Out {
 			msg := msg
-			//t.Log("out:", msg)
+			// t.Log("out:", msg)
 			msgs.Add(msg)
 		}
 	}()

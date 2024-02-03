@@ -2,12 +2,15 @@ package kocto
 
 import (
 	"github.com/caarlos0/env/v7"
+	"github.com/joho/godotenv"
 )
 
 type Environment string
 
 const (
+	Dev         Environment = "dev"
 	Development Environment = "development"
+	Prod        Environment = "pro"
 	Production  Environment = "production"
 )
 
@@ -37,7 +40,12 @@ type RabbitConfig struct {
 	URL string `env:"RABBIT_URL"`
 }
 
-// Loads base configuration from the environment
+// LoadEnv loads .env file to environment
+func LoadEnv() {
+	godotenv.Load()
+}
+
+// LoadConfig loads base configuration from the environment (reads .env)
 func LoadConfig() (Config, error) {
 	var cfg Config
 	err := LoadInConfig(&cfg)
@@ -45,8 +53,10 @@ func LoadConfig() (Config, error) {
 	return cfg, err
 }
 
-// LoadInConfig parses a struct containing env vars
+// LoadInConfig parses a struct containing env vars (reads .env)
 // Use this function if you have your own extended config
 func LoadInConfig(cfg any) error {
+	LoadEnv()
+
 	return env.Parse(cfg)
 }
