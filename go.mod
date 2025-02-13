@@ -6,7 +6,7 @@ toolchain go1.24.0
 
 require (
 	github.com/axiomhq/axiom-go v0.22.0
-	github.com/caarlos0/env/v7 v7.1.0
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/matryer/is v1.4.0

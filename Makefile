@@ -1,7 +1,7 @@
 # Change these variables as necessary.
 MAIN_PACKAGE_PATH := ./cmd/api 
 BINARY_NAME := kocto
-VERSION=1.5.1
+VERSION=1.5.2
 
 # ==================================================================================== #
 # HELPERS

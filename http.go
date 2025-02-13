@@ -133,7 +133,7 @@ func RunServer(srv *echo.Echo, cfg Config, l Logger) error {
 		shutdownError <- nil
 	}()
 
-	l.Info("starting http server on port ", cfg.Port)
+	l.Infow("starting http server", "port", cfg.Port)
 
 	err := srv.Start(":" + cfg.Port)
 	if !errors.Is(err, http.ErrServerClosed) {
