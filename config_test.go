@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Kamae-RT/kocto"
 	"github.com/matryer/is"
-	"kamaesoft.visualstudio.com/kocto/_git/kocto"
 )
 
 func TestConfig(t *testing.T) {

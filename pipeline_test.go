@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Kamae-RT/kocto"
 	"github.com/matryer/is"
-	"kamaesoft.visualstudio.com/kocto/_git/kocto"
 )
 
 type doubler struct {
