@@ -51,7 +51,7 @@ func LogMiddleware(l Logger) echo.MiddlewareFunc {
 				"status", v.Status,
 				"error", v.Error,
 				"length", v.ContentLength,
-				"latency", v.Latency.Milliseconds(),
+				"latency", v.Latency.String(),
 				"query", queryString(v.QueryParams),
 				"headers", headersString(v.Headers),
 			}

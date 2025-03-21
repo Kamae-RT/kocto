@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -51,13 +52,7 @@ func (v *Validator) ToError() error {
 }
 
 func PermittedValue[T comparable](value T, permittedValues ...T) bool {
-	for i := range permittedValues {
-		if value == permittedValues[i] {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(permittedValues, value)
 }
 
 func Matches(value string, rx *regexp.Regexp) bool {

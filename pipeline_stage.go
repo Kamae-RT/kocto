@@ -35,7 +35,7 @@ func newPipeWorker(l Logger, c int, in chan Message, out chan Message, stage Sta
 }
 
 func (w *pipeWorker) Start() error {
-	for i := 0; i < w.concurrency; i++ {
+	for range w.concurrency {
 		w.pool.Go(func() {
 			for msg := range w.In {
 				msg := msg
